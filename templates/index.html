@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أرقام استقبال التحويل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --main-red: #c90b0b;
+            --main-black: #000000;
+            --instapay-color: #552d82; 
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #e0e0e0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            padding: 35px 20px 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-radius: 18px;
+            position: relative;
+            background-image: radial-gradient(#e0e0e0 2px, transparent 2px);
+            background-size: 25px 25px;
+            border: 2px solid #eee;
+            box-sizing: border-box;
+        }
+
+        /* --- الهيدر --- */
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .side-logos { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 90px; }
+        .logo-img { width: 100%; height: auto; max-height: 60px; object-fit: contain; }
+        .round-logo { border-radius: 50%; border: 2px solid #eee; width: 60px; height: 60px; }
+        .avatar-container { position: relative; }
+        .avatar { width: 135px; height: 135px; border-radius: 50%; border: 4px solid var(--main-black); padding: 5px; object-fit: cover; background-color: white; box-shadow: 0 0 0 2px var(--main-red); }
+
+        /* --- عنوان الصفحة --- */
+        .title-wrapper { position: relative; text-align: center; margin-bottom: 30px; }
+        .title-wrapper::before, .title-wrapper::after { content: ''; position: absolute; top: 50%; width: 12%; height: 2px; background-color: var(--main-red); }
+        .title-wrapper::before { right: 0; }
+        .title-wrapper::after { left: 0; }
+        .title { background-color: var(--main-black); color: white; display: inline-block; padding: 8px 30px; border-radius: 30px; font-size: 22px; font-weight: 900; position: relative; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .title span { color: var(--main-red); }
+
+        /* --- زرار إنستاباي الرئيسي --- */
+        .instapay-btn {
+            box-sizing: border-box;
+            background-color: #ffffff;
+            color: var(--instapay-color);
+            border: 2px solid var(--instapay-color);
+            font-family: 'Cairo', sans-serif;
+            font-weight: 900;
+            font-size: 20px;
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+            width: 100%;
+        }
+        .instapay-btn:hover { background-color: var(--instapay-color); color: #ffffff; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(85, 45, 130, 0.2); }
+        .instapay-btn img { height: 28px; object-fit: contain; }
+
+        /* --- قسم الأرقام العادية --- */
+        .numbers-list { display: flex; flex-direction: column; gap: 15px; margin-bottom: 35px; }
+        .number-row { display: flex; align-items: center; direction: ltr; gap: 10px; }
+        .index { background-color: var(--main-black); color: white; font-weight: bold; font-size: 18px; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; border-radius: 10px; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .phone-number { background: linear-gradient(135deg, #d31010, #990000); color: white; font-weight: bold; font-size: 24px; flex-grow: 1; text-align: center; height: 50px; line-height: 50px; border-radius: 10px; box-shadow: inset 0px 3px 5px rgba(255,255,255,0.3), inset 0px -4px 5px rgba(0,0,0,0.3), 0 4px 6px rgba(0,0,0,0.2); text-shadow: 1px 1px 2px rgba(0,0,0,0.5); z-index: 1; letter-spacing: 1px;}
+        .send-btn { background-color: white; color: var(--main-red); border: 1px solid #ddd; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 18px; height: 46px; padding: 0 15px 0 25px; border-radius: 25px; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-left: -35px; position: relative; z-index: 2; box-shadow: -4px 0px 10px rgba(0,0,0,0.15); direction: rtl; text-decoration: none; transition: all 0.2s ease-in-out; }
+        .send-btn:hover { background-color: #f9f9f9; transform: scale(1.03); color: #a00000; }
+        .send-btn:active { transform: scale(0.95); }
+
+        .footer-text { text-align: center; font-size: 17px; font-weight: bold; color: #555; margin-top: 10px; }
+
+        /* --- تصميم القوائم المنبثقة (Modals) --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 999; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(3px); }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { box-sizing: border-box; background-color: white; width: 92%; max-width: 420px; border-radius: 18px; padding: 25px 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.3s ease; direction: rtl; }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-header h3 { margin: 0; color: var(--main-black); font-weight: 900; font-size: 19px; }
+        .close-modal { font-size: 22px; color: #888; cursor: pointer; background: none; border: none; transition: 0.2s; }
+        .close-modal:hover { color: var(--main-red); }
+        
+        /* أزرار القائمة */
+        .modal-option-btn { box-sizing: border-box; display: flex; align-items: center; width: 100%; background-color: #f8f9fa; border: 1px solid #e0e0e0; color: var(--main-black); font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: bold; padding: 14px 15px; margin-bottom: 12px; border-radius: 12px; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .modal-option-btn:hover { background-color: #f0f0f0; border-color: #ccc; }
+        .modal-option-btn i { margin-left: 12px; width: 25px; text-align: center; font-size: 18px; color: #555; }
+        
+        /* زرار الـ IPA المباشر (تصميم مميز) */
+        .ipa-direct-btn { background: linear-gradient(135deg, var(--instapay-color), #402065); color: white; border: none; box-shadow: 0 4px 10px rgba(85, 45, 130, 0.3); }
+        .ipa-direct-btn i { color: white; }
+        .ipa-direct-btn:hover { background: linear-gradient(135deg, #402065, #2b1545); color: white; transform: translateY(-2px); }
+
+        /* تصميم القائمة الثانية (أرقام المحافظ) */
+        .wallet-row { display: flex; justify-content: space-between; align-items: center; background-color: #f8f9fa; padding: 12px 15px; border-radius: 10px; margin-bottom: 12px; direction: ltr; border: 1px solid #eee;}
+        .wallet-number { font-size: 20px; font-weight: bold; color: var(--main-black); letter-spacing: 1px; }
+        .wallet-copy-btn { background-color: var(--main-black); color: white; border: none; padding: 8px 18px; border-radius: 8px; font-family: 'Cairo'; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .wallet-copy-btn:hover { background-color: var(--main-red); }
+        
+        /* زرار إغلاق القائمة بعد النسخ */
+        .done-open-btn { box-sizing: border-box; display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; background-color: #f0f0f0; color: var(--main-black); border: none; font-family: 'Cairo'; font-size: 17px; font-weight: bold; padding: 14px; border-radius: 12px; margin-top: 20px; cursor: pointer; transition: 0.2s; }
+        .done-open-btn:hover { background-color: #e0e0e0; }
+        .done-open-btn i { color: var(--main-red); font-size: 20px; }
+
+        /* رسالة التأكيد (Toast) بتصميم Modern */
+        #toast { box-sizing: border-box; visibility: hidden; min-width: 280px; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); color: #fff; text-align: center; border-radius: 12px; padding: 16px 20px; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 1000; font-weight: bold; font-family: 'Cairo'; font-size: 16px; line-height: 1.6; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 3.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 40px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 40px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- الهيدر والصور -->
+        <div class="top-header">
+            <div class="side-logos">
+                <img src="{{ url_for('static', filename='sali.png') }}" alt="صلي على النبي" class="logo-img round-logo">
+                <img src="{{ url_for('static', filename='etisalat.png') }}" alt="اتصالات" class="logo-img">
+            </div>
+            <div class="avatar-container">
+                <img src="{{ url_for('static', filename='avatar.png') }}" alt="صورتي" class="avatar">
+            </div>
+            <div class="side-logos">
+                <img src="{{ url_for('static', filename='instapay.png') }}" alt="إنستاباي" class="logo-img">
+                <img src="{{ url_for('static', filename='vodafone.png') }}" alt="فودافون" class="logo-img">
+            </div>
+        </div>
+
+        <div class="title-wrapper">
+            <div class="title">أرقام <span>استقبال</span> التحويل</div>
+        </div>
+
+        <!-- زرار إنستاباي الرئيسي -->
+        <button onclick="openModal('mainInstapayModal')" class="instapay-btn">
+            <img src="{{ url_for('static', filename='instapay.png') }}" alt="إنستاباي">
+            طرق التحويل عبر إنستاباي
+        </button>
+
+        <!-- الأرقام مع أزرار التحويل المباشر العادية (USSD) -->
+        <div class="numbers-list">
+            {% for wallet in wallets %}
+            <div class="number-row">
+                <div class="index">0{{ loop.index }}</div>
+                <div class="phone-number">{{ wallet.phone_number }}</div>
+                <a href="#" onclick="trackAndCall('{{ shop.id }}', '{{ wallet.phone_number }}')" class="send-btn"><i class="fa-solid fa-paper-plane"></i> ابعت</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="footer-text">.. جزاكم الله خيراً ..</div>
+
+    </div>
+
+    <!-- ==================== القوائم المنبثقة ==================== -->
+    
+    <!-- القائمة الأولى (اختيار طريقة إنستاباي) -->
+    <div id="mainInstapayModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>طرق التحويل المتاحة</h3>
+                <button onclick="closeModal('mainInstapayModal')" class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- زرار الـ IPA (تصميم مميز) -->
+            <a href="#" onclick="trackAndRedirect('{{ shop.id }}', '{{ shop.instapay_link }}')" class="modal-option-btn ipa-direct-btn">
+                <i class="fa-solid fa-bolt"></i> تحويل مباشر (Instapay ID)
+            </a>
+            
+            <button onclick="openWalletModal()" class="modal-option-btn">
+                <i class="fa-solid fa-wallet"></i> تحويل لمحفظة إلكترونية
+            </button>
+        </div>
+    </div>
+
+    <!-- القائمة الثانية (أرقام المحافظ للنسخ) -->
+    <div id="walletNumbersModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>انسخ رقم المحفظة</h3>
+                <button onclick="closeModal('walletNumbersModal')" class="close-modal"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+            </div>
+            
+            {% for wallet in wallets %}
+            <div class="wallet-row">
+                <span class="wallet-number">{{ wallet.phone_number }}</span>
+                <button onclick="copyWalletText('{{ wallet.phone_number }}')" class="wallet-copy-btn">كوبي</button>
+            </div>
+            {% endfor %}
+
+            <!-- زرار إغلاق القائمة بعد النسخ -->
+            <button class="done-open-btn" onclick="closeModal('walletNumbersModal')">
+                <i class="fa-solid fa-check-circle"></i> تم النسخ.. إغلاق القائمة
+            </button>
+        </div>
+    </div>
+
+    <!-- إشعار التأكيد -->
+    <div id="toast">تم النسخ!</div>
+
+    <!-- ==================== السكريبت (JS) ==================== -->
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openWalletModal() {
+            closeModal('mainInstapayModal');
+            openModal('walletNumbersModal');
+        }
+
+        // دالة نسخ أرقام المحافظ فقط
+        function copyWalletText(textToCopy) {
+            navigator.clipboard.writeText(textToCopy).then(function() {
+                var toast = document.getElementById("toast");
+                toast.innerHTML = "تم نسخ رقم المحفظة بنجاح! <br> افتح تطبيق إنستاباي بنفسك للصق الرقم";
+                toast.className = "show";
+                setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 4000);
+            });
+        }
+
+        // دالة تسجيل الضغطة ثم فتح لوحة الاتصال
+        function trackAndCall(shopId, phoneNumber) {
+            fetch('/api/track-click/' + shopId, { method: 'POST' });
+            window.location.href = 'tel:*9*7*' + phoneNumber + '%23';
+        }
+
+        // دالة تسجيل الضغطة ثم تحويل الزبون لإنستاباي
+        function trackAndRedirect(shopId, instapayLink) {
+            fetch('/api/track-click/' + shopId, { method: 'POST' });
+            window.location.href = instapayLink;
+        }
+    </script>
+</body>
+</html>
