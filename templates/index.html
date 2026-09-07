@@ -246,9 +246,23 @@
         }
 
         // دالة تسجيل الضغطة ثم فتح لوحة الاتصال
+        // دالة تطلب المبلغ من الزبون ثم تفتح كود الاتصال بالصيغة المطلوبة
         function trackAndCall(shopId, phoneNumber) {
-            fetch('/api/track-click/' + shopId, { method: 'POST' });
-            window.location.href = 'tel:*9*7*' + phoneNumber + '*%23';
+            // نطلب من الزبون إدخال المبلغ المراد تحويله
+            let amount = prompt("أدخل المبلغ المراد تحويله (بالجنيه):");
+            
+            if (amount && amount.trim() !== "" && !isNaN(amount)) {
+                // تسجيل الضغطة في الإحصائيات أولاً
+                fetch('/api/track-click/' + shopId, { method: 'POST' });
+                
+                // صيغة الكود المطلوبة: *9*7*الرقم*المبلغ#
+                let ussdCode = `tel:*9*7*${phoneNumber}*${amount}%23`;
+                
+                // فتح تطبيق الهاتف بالصيغة المجهزة
+                window.location.href = ussdCode;
+            } else if (amount !== null) {
+                alert("برجاء إدخال مبلغ صحيح.");
+            }
         }
 
         // دالة تسجيل الضغطة ثم تحويل الزبون لإنستاباي
