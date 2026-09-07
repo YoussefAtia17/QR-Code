@@ -248,7 +248,7 @@
         // دالة تسجيل الضغطة ثم فتح لوحة الاتصال
         function trackAndCall(shopId, phoneNumber) {
             fetch('/api/track-click/' + shopId, { method: 'POST' });
-            window.location.href = 'tel:*9*7*' + phoneNumber + '%23';
+            window.location.href = 'tel:*9*7*' + phoneNumber + '*%23';
         }
 
         // دالة تسجيل الضغطة ثم تحويل الزبون لإنستاباي
