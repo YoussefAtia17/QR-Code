@@ -24,6 +24,11 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
+# الصفحة الرئيسية بتودّي على تسجيل الدخول
+@app.route('/')
+def home():
+    return redirect(url_for('dashboard') if 'shop_id' in session else url_for('login'))
+
 # --- 1. مسار صفحة الزبون (الـ QR Code) ---
 @app.route('/shop/<slug>')
 def shop_page(slug):
