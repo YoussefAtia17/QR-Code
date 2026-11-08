@@ -2,12 +2,23 @@ import os
 from flask import Flask, render_template, abort, jsonify, request, session, redirect, url_for
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from werkzeug.security import generate_password_hash, check_password_hash
 
 load_dotenv()
 
 app = Flask(__name__)
 # مفتاح سري لحماية جلسات تسجيل الدخول (Session)
-app.secret_key = os.environ.get("SECRET_KEY", "super_secret_key_youssef")
+# لازم يتحط في متغيرات البيئة (Vercel > Settings > Environment Variables)، مفيش قيمة افتراضية
+app.secret_key = os.environ.get("SECRET_KEY")
+if not app.secret_key:
+    raise RuntimeError("SECRET_KEY is not set. Add it to the environment variables.")
+app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
+
+# كلمات السر المشفرة بتبدأ بنوع الخوارزمية (مثلاً scrypt: أو pbkdf2:)
+HASH_PREFIXES = ("scrypt:", "pbkdf2:")
+
+def is_hashed(value):
+    return isinstance(value, str) and value.startswith(HASH_PREFIXES)
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
@@ -51,11 +62,22 @@ def login():
         slug = request.form.get('slug')
         password = request.form.get('password')
         
-        # التأكد من صحة بيانات الدخول
-        response = supabase.table('shops').select('*').eq('slug', slug).eq('password', password).execute()
-        
-        if response.data:
-            session['shop_id'] = response.data[0]['id']
+        # نجيب المحل بالاسم بس، ونقارن كلمة السر هنا بعد التشفير
+        response = supabase.table('shops').select('id, password').eq('slug', slug).execute()
+        shop = response.data[0] if response.data else None
+        stored = shop['password'] if shop else None
+
+        valid = False
+        if stored and is_hashed(stored):
+            valid = check_password_hash(stored, password or "")
+        elif stored and password and stored == password:
+            # كلمة سر قديمة متخزنة نص عادي: نقبلها مرة واحدة ونشفرها على طول
+            valid = True
+            supabase.table('shops').update({'password': generate_password_hash(password)}).eq('id', shop['id']).execute()
+
+        if valid:
+            session.clear()
+            session['shop_id'] = shop['id']
             return redirect(url_for('dashboard'))
         else:
             return render_template('login.html', error="اسم الدخول أو كلمة المرور غير صحيحة")
@@ -84,17 +106,18 @@ def dashboard():
     
     return render_template('dashboard.html', shop=shop_data, wallets=wallets, stats=stats)
 
-@app.route('/delete-wallet/<wallet_id>')
+@app.route('/delete-wallet/<wallet_id>', methods=['POST'])
 def delete_wallet(wallet_id):
     if 'shop_id' not in session:
         return redirect(url_for('login'))
-    
-    supabase.table('wallets').delete().eq('id', wallet_id).execute()
+
+    # المسح بيتم بس لو الرقم تبع المحل اللي عامل تسجيل دخول
+    supabase.table('wallets').delete().eq('id', wallet_id).eq('shop_id', session['shop_id']).execute()
     return redirect(url_for('dashboard'))
 
 @app.route('/logout')
 def logout():
-    session.pop('shop_id', None)
+    session.clear()
     return redirect(url_for('login'))
 
 if __name__ == '__main__':

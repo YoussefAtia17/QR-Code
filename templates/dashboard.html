@@ -46,7 +46,9 @@
             {% for wallet in wallets %}
             <div class="wallet-item">
                 <span style="font-size: 20px; font-weight: bold;">{{ wallet.phone_number }}</span>
-                <a href="/delete-wallet/{{ wallet.id }}" class="delete-btn" onclick="return confirm('هل أنت متأكد من مسح الرقم؟')">حذف</a>
+                <form method="POST" action="/delete-wallet/{{ wallet.id }}" style="margin:0" onsubmit="return confirm('هل أنت متأكد من مسح الرقم؟')">
+                    <button type="submit" class="delete-btn" style="border:none;cursor:pointer;font-family:'Cairo'">حذف</button>
+                </form>
             </div>
             {% endfor %}
 
